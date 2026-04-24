@@ -1,0 +1,317 @@
+
+<h2 class="sr-only">Soccer schedule dashboard showing clashes, 8am games, and travel distances for May to August 2026</h2>
+
+<style>
+  .dash { padding: 1rem 0; font-family: var(--font-sans); }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-tertiary); margin: 0 0 8px; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+  .metric-val { font-size: 28px; font-weight: 500; color: var(--color-text-primary); line-height: 1; }
+  .metric-lbl { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+  .metric-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .clash-week { border-bottom: 0.5px solid var(--color-border-tertiary); padding: 10px 0; display: grid; grid-template-columns: 90px 1fr; gap: 8px; align-items: start; }
+  .clash-week:last-child { border-bottom: none; }
+  .clash-date { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .clash-month { font-size: 11px; color: var(--color-text-tertiary); }
+  .game-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 8px; border-radius: 20px; margin: 2px 2px 2px 0; }
+  .pill-girls { background: #FBEAF0; color: #72243E; }
+  .pill-u13 { background: #E6F1FB; color: #0C447C; }
+  .pill-m45 { background: #EAF3DE; color: #27500A; }
+  .clash-warning { background: #FAEEDA; color: #633806; font-size: 11px; padding: 2px 7px; border-radius: 20px; display: inline-block; margin-left: 4px; }
+  .game-time { font-size: 11px; color: var(--color-text-tertiary); min-width: 36px; }
+  .dist-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+  .dist-row:last-child { border-bottom: none; }
+  .dist-bar-wrap { width: 120px; height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+  .dist-bar { height: 6px; border-radius: 3px; background: #3266ad; }
+  .dist-km { font-size: 12px; font-weight: 500; color: var(--color-text-primary); text-align: right; min-width: 36px; }
+  .eight-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+  .eight-row:last-child { border-bottom: none; }
+  .eight-date { min-width: 80px; font-size: 12px; color: var(--color-text-secondary); }
+  .eight-loc { font-size: 11px; color: var(--color-text-tertiary); }
+  .highlight-card { background: #E6F1FB; border: 0.5px solid #B5D4F4; border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+  .highlight-title { font-size: 13px; font-weight: 500; color: #0C447C; }
+  .highlight-sub { font-size: 12px; color: #185FA5; margin-top: 3px; }
+  .highlight-km { font-size: 28px; font-weight: 500; color: #0C447C; }
+  .highlight-kmlab { font-size: 11px; color: #185FA5; text-align: right; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 500px) { .metric-grid { grid-template-columns: repeat(2,1fr); } .two-col { grid-template-columns: 1fr; } }
+  
+  
+body {
+    background: #f2f4f7; /* light grey */
+  }
+
+  /* Rounded corner borders for all widgets */
+  .metric,
+  .card,
+  .highlight-card {
+    border-radius: 14px !important;
+    border: 1px solid var(--color-border-tertiary, #d9e1ec) !important;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  /* Keep highlight card’s existing border colour */
+  .highlight-card {
+    border-color: #B5D4F4 !important;
+  }
+
+  /* Optional row rounding (inside cards) */
+  .clash-week,
+  .dist-row,
+  .eight-row {
+    border-radius: 10px;
+  }
+
+  /* Optional hover (only on devices that support hover) */
+  @media (hover: hover) and (pointer: fine) {
+    .metric:hover,
+    .card:hover,
+    .highlight-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    }
+
+    .clash-week:hover,
+    .dist-row:hover,
+    .eight-row:hover {
+      background: rgba(0,0,0,0.03);
+    }
+  }
+
+
+</style>
+
+<div class="dash">
+  <p class="section-label">Overview · May – Aug 2026</p>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-val">47</div>
+      <div class="metric-lbl">Total games</div>
+      <div class="metric-sub">3 teams</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">16</div>
+      <div class="metric-lbl">Saturdays with clashes</div>
+      <div class="metric-sub">All 16 match days</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">11</div>
+      <div class="metric-lbl">8am games</div>
+      <div class="metric-sub">All U10 Girls</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">~35km</div>
+      <div class="metric-lbl">Furthest trip</div>
+      <div class="metric-sub">Gwandalan, 4 Jul</div>
+    </div>
+  </div>
+
+  <p class="section-label">Furthest game from 240 Brush Rd, Ourimbah</p>
+  <div class="highlight-card">
+    <div>
+      <div class="highlight-title">GWA U10GIRLS-1 vs OUR U10GIRLS-2</div>
+      <div class="highlight-sub">Sat 4 Jul · 8:00am · Kanangra Drive, GWANDALAN NSW 2259</div>
+    </div>
+    <div style="text-align:right;">
+      <div class="highlight-km">35km</div>
+      <div class="highlight-kmlab">one way</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <p class="section-label">Top 5 furthest venues</p>
+      <div class="card" style="padding: 0.75rem 1rem;">
+        <div class="dist-row">
+          <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Gwandalan</div><div class="eight-loc">4 Jul · U10 Girls</div></div>
+          <div class="dist-bar-wrap"><div class="dist-bar" style="width:100%;"></div></div>
+          <div class="dist-km">35km</div>
+        </div>
+        <div class="dist-row">
+          <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Umina Beach</div><div class="eight-loc">29 Aug · M45</div></div>
+          <div class="dist-bar-wrap"><div class="dist-bar" style="width:91%;"></div></div>
+          <div class="dist-km">32km</div>
+        </div>
+        <div class="dist-row">
+          <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Woy Woy</div><div class="eight-loc">1 Aug · M45</div></div>
+          <div class="dist-bar-wrap"><div class="dist-bar" style="width:86%;"></div></div>
+          <div class="dist-km">30km</div>
+        </div>
+        <div class="dist-row">
+          <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Doyalson</div><div class="eight-loc">16 May · M45</div></div>
+          <div class="dist-bar-wrap"><div class="dist-bar" style="width:80%;"></div></div>
+          <div class="dist-km">28km</div>
+        </div>
+        <div class="dist-row">
+          <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Toukley</div><div class="eight-loc">16 May, 27 Jun, 1 Aug · mult.</div></div>
+          <div class="dist-bar-wrap"><div class="dist-bar" style="width:63%;"></div></div>
+          <div class="dist-km">22km</div>
+        </div>
+      </div>
+
+      <p class="section-label">8am games (all U10 Girls)</p>
+      <div class="card" style="padding: 0.75rem 1rem;">
+        <div class="eight-row"><div class="eight-date">9 May</div><div>Bateau Bay <span class="eight-loc">· ENT vs OUR</span></div></div>
+        <div class="eight-row"><div class="eight-date">16 May</div><div>Toukley <span class="eight-loc">· TOU vs OUR</span></div></div>
+        <div class="eight-row"><div class="eight-date">23 May</div><div>Ourimbah <span class="eight-loc">· OUR vs TOU</span></div></div>
+        <div class="eight-row"><div class="eight-date">30 May</div><div>Chittaway Bay <span class="eight-loc">· BER vs OUR</span></div></div>
+        <div class="eight-row"><div class="eight-date">6 Jun</div><div>Ourimbah <span class="eight-loc">· OUR vs OUR</span></div></div>
+        <div class="eight-row"><div class="eight-date">4 Jul</div><div>Gwandalan <span class="eight-loc">· GWA vs OUR</span></div></div>
+        <div class="eight-row"><div class="eight-date">18 Jul</div><div>Ourimbah <span class="eight-loc">· OUR vs ENT</span></div></div>
+        <div class="eight-row"><div class="eight-date">25 Jul</div><div>Ourimbah <span class="eight-loc">· OUR vs TOU</span></div></div>
+        <div class="eight-row"><div class="eight-date">1 Aug</div><div>Toukley <span class="eight-loc">· TOU vs OUR</span></div></div>
+        <div class="eight-row"><div class="eight-date">8 Aug</div><div>Ourimbah <span class="eight-loc">· OUR vs BER</span></div></div>
+        <div class="eight-row"><div class="eight-date">22 Aug</div><div>Ourimbah <span class="eight-loc">· OUR vs OUR</span></div></div>
+      </div>
+    </div>
+
+    <div>
+      <p class="section-label">Saturday clashes — all 16 weeks</p>
+      <div class="card" style="padding: 0.75rem 1rem;">
+        <div class="clash-week">
+          <div><div class="clash-date">2 May</div><div class="clash-month">May</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">9:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">12:00</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">14:40</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">9 May</div><div class="clash-month">May</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">11:30</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">20:00</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">16 May</div><div class="clash-month">May</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">9:15</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">15:05</span>M45</span>
+            <span class="clash-warning">⚡ Girls & U13 close</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">23 May</div><div class="clash-month">May</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">12:15</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">13:45</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">30 May</div><div class="clash-month">May</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">11:25</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">12:00</span>M45</span>
+            <span class="clash-warning">⚡ U13 & M45 close</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">6 Jun</div><div class="clash-month">Jun</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">12:00</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">15:20</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">13 Jun</div><div class="clash-month">Jun</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">9:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">9:30</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">15:20</span>M45</span>
+            <span class="clash-warning">⚡ Girls & U13 close</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">20 Jun</div><div class="clash-month">Jun</div></div>
+          <div>
+            <span class="game-pill pill-u13"><span class="game-time">10:45</span>U13 Boys</span>
+            <span class="game-pill pill-girls"><span class="game-time">11:00</span>U10 Girls</span>
+            <span class="game-pill pill-m45"><span class="game-time">14:30</span>M45</span>
+            <span class="clash-warning">⚡ U13 & Girls close</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">27 Jun</div><div class="clash-month">Jun</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">9:00</span>U10 Girls</span>
+            <span class="game-pill pill-m45"><span class="game-time">11:45</span>M45</span>
+            <span class="game-pill pill-u13"><span class="game-time">14:15</span>U13 Boys</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">4 Jul</div><div class="clash-month">Jul</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">10:45</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">13:40</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">18 Jul</div><div class="clash-month">Jul</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">10:00</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">14:10</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">25 Jul</div><div class="clash-month">Jul</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">12:15</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">14:55</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">1 Aug</div><div class="clash-month">Aug</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">11:00</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">16:10</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">8 Aug</div><div class="clash-month">Aug</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">9:00</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">13:25</span>M45</span>
+            <span class="clash-warning">⚡ Girls & U13 close</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">22 Aug</div><div class="clash-month">Aug</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">8:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">10:30</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">13:25</span>M45</span>
+          </div>
+        </div>
+        <div class="clash-week">
+          <div><div class="clash-date">29 Aug</div><div class="clash-month">Aug</div></div>
+          <div>
+            <span class="game-pill pill-girls"><span class="game-time">9:00</span>U10 Girls</span>
+            <span class="game-pill pill-u13"><span class="game-time">10:15</span>U13 Boys</span>
+            <span class="game-pill pill-m45"><span class="game-time">13:25</span>M45</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;font-size:11px;color:var(--color-text-tertiary);">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#FBEAF0;border:0.5px solid #ED93B1;"></span>U10 Girls</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#E6F1FB;border:0.5px solid #85B7EB;"></span>U13 Boys</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#EAF3DE;border:0.5px solid #97C459;"></span>M45</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#FAEEDA;border:0.5px solid #EF9F27;"></span>⚡ games within 1hr of each other</span>
+  </div>
+</div>
