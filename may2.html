@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Day Itinerary — Saturday 2 May 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; font-size: 14px; line-height: 1.5; max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888780; margin-bottom: 20px; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .metric { background: #eeede8; border-radius: 8px; padding: 12px 14px; }
+  .metric-val { font-size: 18px; font-weight: 500; color: #1a1a18; }
+  .metric-lbl { font-size: 11px; color: #5f5e5a; margin-top: 3px; }
+  .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+  .timeline { position: relative; padding-left: 28px; }
+  .tl-line { position: absolute; left: 10px; top: 8px; bottom: 8px; width: 1px; background: #d3d1c7; }
+  .tl-item { position: relative; }
+  .tl-dot { position: absolute; left: -24px; top: 14px; width: 10px; height: 10px; border-radius: 50%; }
+  .tl-card { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; }
+  .tl-card.girls { border-left: 3px solid #D4537E; }
+  .tl-card.u13 { border-left: 3px solid #378ADD; }
+  .tl-card.m45 { border-left: 3px solid #1D9E75; }
+  .tl-card.travel { border: 1px dashed #d3d1c7; background: #f8f7f4; }
+  .tl-card.hbreak { border-left: 3px solid #d3d1c7; background: #f5f4f0; }
+  .ch { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+  .ct { font-size: 13px; font-weight: 500; color: #1a1a18; }
+  .ctime { font-size: 12px; font-weight: 500; color: #5f5e5a; white-space: nowrap; }
+  .cd { font-size: 12px; color: #5f5e5a; margin-top: 3px; }
+  .cloc { font-size: 11px; color: #888780; margin-top: 2px; }
+  .tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-top: 3px; }
+  .tg { background: #FBEAF0; color: #72243E; }
+  .tb { background: #E6F1FB; color: #0C447C; }
+  .tm { background: #EAF3DE; color: #27500A; }
+  .th { background: #eeede8; color: #5f5e5a; border: 1px solid #d3d1c7; }
+  .alert { background: #FAEEDA; border: 1px solid #FAC775; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #633806; margin-top: 5px; font-weight: 500; }
+  .mlink { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #185FA5; text-decoration: none; margin-top: 5px; padding: 3px 8px; border: 1px solid #B5D4F4; border-radius: 8px; background: #E6F1FB; }
+  .map-panel { position: sticky; top: 16px; }
+  .map-box { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; overflow: hidden; }
+  .map-title { font-size: 12px; font-weight: 500; color: #5f5e5a; padding: 9px 13px; border-bottom: 1px solid #d3d1c7; }
+  #map { width: 100%; height: 300px; }
+  .map-locs { padding: 10px 13px; }
+  .loc-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid #eeede8; font-size: 11px; }
+  .loc-row:last-child { border-bottom: none; }
+  .loc-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .loc-name { font-weight: 500; color: #1a1a18; }
+  .loc-addr { color: #888780; font-size: 10px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid #d3d1c7; font-size: 11px; color: #888780; }
+  .li { display: flex; align-items: center; gap: 5px; }
+  .ld { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .footer { margin-top: 20px; font-size: 11px; color: #888780; border-top: 1px solid #d3d1c7; padding-top: 12px; }
+  @media (max-width: 660px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .map-panel { position: static; }
+  }
+  @media print { body { background: white; } .tl-card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>Match day itinerary — Saturday 2 May 2026</h1>
+<p class="subtitle">Starting from 240 Brush Rd, Ourimbah &nbsp;·&nbsp; Arrive 30 min before each kickoff</p>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-val">3 games</div><div class="metric-lbl">Today</div></div>
+  <div class="metric"><div class="metric-val">8:25am</div><div class="metric-lbl">First departure</div></div>
+  <div class="metric"><div class="metric-val">~4:32pm</div><div class="metric-lbl">Home by</div></div>
+  <div class="metric"><div class="metric-val">2 breaks</div><div class="metric-lbl">Home windows</div></div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="timeline">
+      <div class="tl-line"></div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart home</div><div class="ctime">8:25am</div></div>
+          <div class="cd">Drive to Ourimbah Oval (~5 min, ~1.5km)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/13+Chittaway+Rd+Ourimbah+NSW+2258" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 8:25am to arrive by 8:30am</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#D4537E"></div>
+        <div class="tl-card girls">
+          <div class="ch">
+            <div><span class="tag tg">U10 Girls</span><div class="ct" style="margin-top:4px">OUR U10GIRLS-2 vs GWA U10GIRLS-1</div></div>
+            <div class="ctime">9:00 – 10:00am</div>
+          </div>
+          <div class="cloc">13 Chittaway Rd, Ourimbah NSW 2258</div>
+          <div class="cd" style="margin-top:5px">Arrive by 8:30am &nbsp;·&nbsp; Game ~1 hr</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#d3d1c7"></div>
+        <div class="tl-card hbreak">
+          <div class="ch"><div class="ct">Return home</div><div class="ctime">10:05 – 11:25am</div></div>
+          <div class="cd">80 minutes at home — breakfast, rest before next game</div>
+          <span class="tag th">80 min break</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart home</div><div class="ctime">11:25am</div></div>
+          <div class="cd">Drive to Ourimbah Oval (~5 min)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/13+Chittaway+Rd+Ourimbah+NSW+2258" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 11:25am to arrive by 11:30am</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#378ADD"></div>
+        <div class="tl-card u13">
+          <div class="ch">
+            <div><span class="tag tb">U13 Boys</span><div class="ct" style="margin-top:4px">OUR U13B vs EGO U13B-2</div></div>
+            <div class="ctime">12:00 – 1:15pm</div>
+          </div>
+          <div class="cloc">13 Chittaway Rd, Ourimbah NSW 2258</div>
+          <div class="cd" style="margin-top:5px">Arrive by 11:30am &nbsp;·&nbsp; Game ~1 hr 15 min</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#d3d1c7"></div>
+        <div class="tl-card hbreak">
+          <div class="ch"><div class="ct">Return home</div><div class="ctime">1:20 – 1:58pm</div></div>
+          <div class="cd">38 minutes at home — quick lunch before Lisarow</div>
+          <span class="tag th">38 min break</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart for Lisarow</div><div class="ctime">1:58pm</div></div>
+          <div class="cd">Drive to Lisarow Sports Precinct (~12 min, ~6km)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/The+Ridgeway+Lisarow+NSW+2250" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 1:58pm to arrive by 2:10pm</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#1D9E75"></div>
+        <div class="tl-card m45">
+          <div class="ch">
+            <div><span class="tag tm">M45</span><div class="ct" style="margin-top:4px">BWT M45C vs OUR M45C</div></div>
+            <div class="ctime">2:40 – 4:20pm</div>
+          </div>
+          <div class="cloc">The Ridgeway, Lisarow NSW 2250</div>
+          <div class="cd" style="margin-top:5px">Arrive by 2:10pm &nbsp;·&nbsp; Game ~1 hr 40 min</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Return home</div><div class="ctime">~4:32pm</div></div>
+          <div class="cd">Drive home from Lisarow (~12 min)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/The+Ridgeway+Lisarow+NSW+2250/240+Brush+Rd+Ourimbah+NSW+2258" target="_blank">&#128204; Google Maps directions home</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#D4537E"></div>U10 Girls</div>
+      <div class="li"><div class="ld" style="background:#378ADD"></div>U13 Boys</div>
+      <div class="li"><div class="ld" style="background:#1D9E75"></div>M45</div>
+      <div class="li"><div class="ld" style="background:#d3d1c7"></div>Home / travel</div>
+    </div>
+  </div>
+
+  <div class="map-panel">
+    <div class="map-box">
+      <div class="map-title">Match day locations</div>
+      <div id="map"></div>
+      <div class="map-locs">
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#888780"></div>
+          <div><div class="loc-name">Home base</div><div class="loc-addr">240 Brush Rd, Ourimbah</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#D4537E"></div>
+          <div><div class="loc-name">Games 1 &amp; 2 — Ourimbah Oval</div><div class="loc-addr">13 Chittaway Rd &nbsp;·&nbsp; 9:00am &amp; 12:00pm</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#1D9E75"></div>
+          <div><div class="loc-name">Game 3 — Lisarow</div><div class="loc-addr">The Ridgeway &nbsp;·&nbsp; 2:40pm</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Drive times are approximate. Allow extra time on game days. Google Maps links open turn-by-turn directions.<br>
+  Generated from Shelley Family Google Calendar &nbsp;·&nbsp; 240 Brush Rd, Ourimbah NSW 2258
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var map = L.map('map').setView([-33.375, 151.387], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  function makeIcon(color) {
+    return L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35)"></div>',
+      iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -10]
+    });
+  }
+
+  L.marker([-33.3641, 151.3973], {icon: makeIcon('#888780')})
+    .addTo(map).bindPopup('<b>Home base</b><br>240 Brush Rd, Ourimbah');
+
+  L.marker([-33.3541, 151.3732], {icon: makeIcon('#D4537E')})
+    .addTo(map).bindPopup('<b>Games 1 &amp; 2 — Ourimbah Oval</b><br>13 Chittaway Rd<br>U10 Girls 9:00am &amp; U13 Boys 12:00pm');
+
+  L.marker([-33.3915, 151.3895], {icon: makeIcon('#1D9E75')})
+    .addTo(map).bindPopup('<b>Game 3 — Lisarow</b><br>The Ridgeway<br>M45 2:40pm');
+
+  var route = [
+    [-33.3641, 151.3973],
+    [-33.3541, 151.3732],
+    [-33.3641, 151.3973],
+    [-33.3541, 151.3732],
+    [-33.3641, 151.3973],
+    [-33.3915, 151.3895],
+    [-33.3641, 151.3973]
+  ];
+  L.polyline(route, {color: '#378ADD', weight: 2.5, opacity: 0.55, dashArray: '6,6'}).addTo(map);
+</script>
+</body>
+</html>
