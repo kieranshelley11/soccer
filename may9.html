@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Day Itinerary — Saturday 9 May 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; font-size: 14px; line-height: 1.5; max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888780; margin-bottom: 20px; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .metric { background: #eeede8; border-radius: 8px; padding: 12px 14px; }
+  .metric-val { font-size: 18px; font-weight: 500; color: #1a1a18; }
+  .metric-lbl { font-size: 11px; color: #5f5e5a; margin-top: 3px; }
+  .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+  .timeline { position: relative; padding-left: 28px; }
+  .tl-line { position: absolute; left: 10px; top: 8px; bottom: 8px; width: 1px; background: #d3d1c7; }
+  .tl-item { position: relative; }
+  .tl-dot { position: absolute; left: -24px; top: 14px; width: 10px; height: 10px; border-radius: 50%; }
+  .tl-card { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; }
+  .tl-card.girls { border-left: 3px solid #D4537E; }
+  .tl-card.u13 { border-left: 3px solid #378ADD; }
+  .tl-card.m45 { border-left: 3px solid #1D9E75; }
+  .tl-card.travel { border: 1px dashed #d3d1c7; background: #f8f7f4; }
+  .tl-card.hbreak { border-left: 3px solid #d3d1c7; background: #f5f4f0; }
+  .tl-card.hbreak-long { border-left: 3px solid #97C459; background: #f2f8eb; }
+  .ch { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+  .ct { font-size: 13px; font-weight: 500; color: #1a1a18; }
+  .ctime { font-size: 12px; font-weight: 500; color: #5f5e5a; white-space: nowrap; }
+  .cd { font-size: 12px; color: #5f5e5a; margin-top: 3px; }
+  .cloc { font-size: 11px; color: #888780; margin-top: 2px; }
+  .tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-top: 3px; }
+  .tg { background: #FBEAF0; color: #72243E; }
+  .tb { background: #E6F1FB; color: #0C447C; }
+  .tm { background: #EAF3DE; color: #27500A; }
+  .th { background: #eeede8; color: #5f5e5a; border: 1px solid #d3d1c7; }
+  .th-long { background: #EAF3DE; color: #27500A; border: 1px solid #97C459; }
+  .te { background: #F0EBF8; color: #4A1D7A; }
+  .alert { background: #FAEEDA; border: 1px solid #FAC775; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #633806; margin-top: 5px; font-weight: 500; }
+  .mlink { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #185FA5; text-decoration: none; margin-top: 5px; padding: 3px 8px; border: 1px solid #B5D4F4; border-radius: 8px; background: #E6F1FB; }
+  .map-panel { position: sticky; top: 16px; }
+  .map-box { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; overflow: hidden; }
+  .map-title { font-size: 12px; font-weight: 500; color: #5f5e5a; padding: 9px 13px; border-bottom: 1px solid #d3d1c7; }
+  #map { width: 100%; height: 300px; }
+  .map-locs { padding: 10px 13px; }
+  .loc-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid #eeede8; font-size: 11px; }
+  .loc-row:last-child { border-bottom: none; }
+  .loc-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .loc-name { font-weight: 500; color: #1a1a18; }
+  .loc-addr { color: #888780; font-size: 10px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid #d3d1c7; font-size: 11px; color: #888780; }
+  .li { display: flex; align-items: center; gap: 5px; }
+  .ld { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .footer { margin-top: 20px; font-size: 11px; color: #888780; border-top: 1px solid #d3d1c7; padding-top: 12px; }
+  .evening-badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 20px; background: #F0EBF8; color: #4A1D7A; margin-left: 6px; vertical-align: middle; }
+  @media (max-width: 660px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .map-panel { position: static; }
+  }
+  @media print { body { background: white; } .tl-card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>Match day itinerary — Saturday 9 May 2026</h1>
+<p class="subtitle">Starting from 240 Brush Rd, Ourimbah &nbsp;·&nbsp; Arrive 30 min before each kickoff &nbsp;·&nbsp; Mother's Day weekend 🌸</p>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-val">3 games</div><div class="metric-lbl">Today</div></div>
+  <div class="metric"><div class="metric-val">7:18am</div><div class="metric-lbl">First departure</div></div>
+  <div class="metric"><div class="metric-val">~9:48pm</div><div class="metric-lbl">Home by</div></div>
+  <div class="metric"><div class="metric-val">6h 22m</div><div class="metric-lbl">Midday home break</div></div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="timeline">
+      <div class="tl-line"></div>
+
+      <!-- DEPARTURE 1 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart home</div><div class="ctime">7:18am</div></div>
+          <div class="cd">Drive to Bateau Bay (~12 min, ~7km)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/Cresthaven+Avenue+Bateau+Bay+NSW+2261" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 7:18am to arrive by 7:30am</div>
+        </div>
+      </div>
+
+      <!-- GAME 1 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#D4537E"></div>
+        <div class="tl-card girls">
+          <div class="ch">
+            <div><span class="tag tg">U10 Girls</span><div class="ct" style="margin-top:4px">ENT U10GIRLS-1 vs OUR U10GIRLS-2</div></div>
+            <div class="ctime">8:00 – 9:00am</div>
+          </div>
+          <div class="cloc">Cresthaven Avenue, Bateau Bay NSW 2261</div>
+          <div class="cd" style="margin-top:5px">Arrive by 7:30am &nbsp;·&nbsp; Game ~1 hr</div>
+        </div>
+      </div>
+
+      <!-- HOME BREAK 1 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#d3d1c7"></div>
+        <div class="tl-card hbreak">
+          <div class="ch"><div class="ct">Return home</div><div class="ctime">9:12 – 10:45am</div></div>
+          <div class="cd">93 minutes at home — breakfast &amp; rest before East Gosford</div>
+          <span class="tag th">93 min break</span>
+        </div>
+      </div>
+
+      <!-- DEPARTURE 2 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart home for East Gosford</div><div class="ctime">10:45am</div></div>
+          <div class="cd">Drive to Wattle St, East Gosford (~15 min, ~10km)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/Wattle+St+East+Gosford+NSW+2250" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 10:45am to arrive by 11:00am</div>
+        </div>
+      </div>
+
+      <!-- GAME 2 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#378ADD"></div>
+        <div class="tl-card u13">
+          <div class="ch">
+            <div><span class="tag tb">U13 Boys</span><div class="ct" style="margin-top:4px">EGO U13B-1 vs OUR U13B</div></div>
+            <div class="ctime">11:30am – 12:45pm</div>
+          </div>
+          <div class="cloc">Wattle St, East Gosford NSW 2250</div>
+          <div class="cd" style="margin-top:5px">Arrive by 11:00am &nbsp;·&nbsp; Game ~1 hr 15 min</div>
+        </div>
+      </div>
+
+      <!-- HOME BREAK 2 - LONG -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#97C459"></div>
+        <div class="tl-card hbreak-long">
+          <div class="ch"><div class="ct">Return home — long afternoon break</div><div class="ctime">1:00 – 7:22pm</div></div>
+          <div class="cd">6 hrs 22 min at home — plenty of time for a Mother's Day lunch! 🌸</div>
+          <span class="tag th-long">6h 22m break</span>
+        </div>
+      </div>
+
+      <!-- DEPARTURE 3 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart home for Lisarow <span class="evening-badge">🌙 Evening</span></div><div class="ctime">7:22pm</div></div>
+          <div class="cd">Drive to Pluim Park, Lisarow (~8 min, ~5km)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/Lot+1+Tuggerah+Street+Lisarow+NSW+2250" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 7:22pm to arrive by 7:30pm</div>
+        </div>
+      </div>
+
+      <!-- GAME 3 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#1D9E75"></div>
+        <div class="tl-card m45">
+          <div class="ch">
+            <div><span class="tag tm">M45</span><span class="tag te">🌙 Evening</span><div class="ct" style="margin-top:4px">OUR M45C vs SEU M45C</div></div>
+            <div class="ctime">8:00 – 9:40pm</div>
+          </div>
+          <div class="cloc">Pluim Park, Lot 1 Tuggerah St, Lisarow NSW 2250</div>
+          <div class="cd" style="margin-top:5px">Arrive by 7:30pm &nbsp;·&nbsp; Game ~1 hr 40 min</div>
+        </div>
+      </div>
+
+      <!-- RETURN HOME -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Return home</div><div class="ctime">~9:48pm</div></div>
+          <div class="cd">Drive home from Lisarow (~8 min)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/Lot+1+Tuggerah+Street+Lisarow+NSW+2250/240+Brush+Rd+Ourimbah+NSW+2258" target="_blank">&#128204; Google Maps directions home</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#D4537E"></div>U10 Girls</div>
+      <div class="li"><div class="ld" style="background:#378ADD"></div>U13 Boys</div>
+      <div class="li"><div class="ld" style="background:#1D9E75"></div>M45</div>
+      <div class="li"><div class="ld" style="background:#d3d1c7"></div>Home / travel</div>
+      <div class="li"><div class="ld" style="background:#97C459"></div>Long home break</div>
+    </div>
+  </div>
+
+  <div class="map-panel">
+    <div class="map-box">
+      <div class="map-title">Match day locations</div>
+      <div id="map"></div>
+      <div class="map-locs">
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#888780"></div>
+          <div><div class="loc-name">Home base</div><div class="loc-addr">240 Brush Rd, Ourimbah</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#D4537E"></div>
+          <div><div class="loc-name">Game 1 — Bateau Bay</div><div class="loc-addr">Cresthaven Ave &nbsp;·&nbsp; 8:00am · U10 Girls</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#378ADD"></div>
+          <div><div class="loc-name">Game 2 — East Gosford</div><div class="loc-addr">Wattle St &nbsp;·&nbsp; 11:30am · U13 Boys</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#1D9E75"></div>
+          <div><div class="loc-name">Game 3 — Lisarow (Evening)</div><div class="loc-addr">Pluim Park, Tuggerah St &nbsp;·&nbsp; 8:00pm · M45</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Drive times are approximate. Allow extra time on game days. Google Maps links open turn-by-turn directions.<br>
+  Generated from Shelley Family Google Calendar &nbsp;·&nbsp; 240 Brush Rd, Ourimbah NSW 2258
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var map = L.map('map').setView([-33.375, 151.39], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  function makeIcon(color, label) {
+    return L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35)"></div>',
+      iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -10]
+    });
+  }
+
+  // Home: -33.3641, 151.3973
+  L.marker([-33.3641, 151.3973], {icon: makeIcon('#888780')})
+    .addTo(map).bindPopup('<b>Home base</b><br>240 Brush Rd, Ourimbah');
+
+  // Bateau Bay: Cresthaven Ave approx -33.3503, 151.4502
+  L.marker([-33.3503, 151.4502], {icon: makeIcon('#D4537E')})
+    .addTo(map).bindPopup('<b>Game 1 — U10 Girls</b><br>Cresthaven Ave, Bateau Bay<br>8:00am');
+
+  // East Gosford: Wattle St approx -33.4195, 151.3551
+  L.marker([-33.4195, 151.3551], {icon: makeIcon('#378ADD')})
+    .addTo(map).bindPopup('<b>Game 2 — U13 Boys</b><br>Wattle St, East Gosford<br>11:30am');
+
+  // Lisarow: Tuggerah St approx -33.3825, 151.3780
+  L.marker([-33.3825, 151.3780], {icon: makeIcon('#1D9E75')})
+    .addTo(map).bindPopup('<b>Game 3 — M45 (Evening)</b><br>Pluim Park, Lisarow<br>8:00pm');
+
+  // Route line
+  var route = [
+    [-33.3641, 151.3973],
+    [-33.3503, 151.4502],
+    [-33.3641, 151.3973],
+    [-33.4195, 151.3551],
+    [-33.3641, 151.3973],
+    [-33.3825, 151.3780],
+    [-33.3641, 151.3973]
+  ];
+  L.polyline(route, {color: '#378ADD', weight: 2.5, opacity: 0.5, dashArray: '6,6'}).addTo(map);
+</script>
+</body>
+</html>
