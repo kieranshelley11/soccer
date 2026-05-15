@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Day Itinerary — Saturday 16 May 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 24px; font-size: 14px; line-height: 1.5; max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888780; margin-bottom: 20px; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .metric { background: #eeede8; border-radius: 8px; padding: 12px 14px; }
+  .metric-val { font-size: 18px; font-weight: 500; color: #1a1a18; }
+  .metric-lbl { font-size: 11px; color: #5f5e5a; margin-top: 3px; }
+  .clash-banner { background: #FAEEDA; border: 1px solid #FAC775; border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; font-size: 12px; color: #633806; }
+  .clash-banner strong { font-size: 13px; display: block; margin-bottom: 4px; }
+  .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+  .timeline { position: relative; padding-left: 28px; }
+  .tl-line { position: absolute; left: 10px; top: 8px; bottom: 8px; width: 1px; background: #d3d1c7; }
+  .tl-item { position: relative; }
+  .tl-dot { position: absolute; left: -24px; top: 14px; width: 10px; height: 10px; border-radius: 50%; }
+  .tl-card { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; }
+  .tl-card.girls { border-left: 3px solid #D4537E; }
+  .tl-card.u13 { border-left: 3px solid #378ADD; }
+  .tl-card.m45 { border-left: 3px solid #1D9E75; }
+  .tl-card.travel { border: 1px dashed #d3d1c7; background: #f8f7f4; }
+  .tl-card.travel-warn { border: 1px dashed #FAC775; background: #FAEEDA; }
+  .tl-card.hbreak { border-left: 3px solid #d3d1c7; background: #f5f4f0; }
+  .tl-card.split { border-left: 3px solid #9B59B6; background: #F8F2FC; }
+  .ch { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+  .ct { font-size: 13px; font-weight: 500; color: #1a1a18; }
+  .ctime { font-size: 12px; font-weight: 500; color: #5f5e5a; white-space: nowrap; }
+  .cd { font-size: 12px; color: #5f5e5a; margin-top: 3px; }
+  .cloc { font-size: 11px; color: #888780; margin-top: 2px; }
+  .tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-top: 3px; margin-right: 3px; }
+  .tg { background: #FBEAF0; color: #72243E; }
+  .tb { background: #E6F1FB; color: #0C447C; }
+  .tm { background: #EAF3DE; color: #27500A; }
+  .th { background: #eeede8; color: #5f5e5a; border: 1px solid #d3d1c7; }
+  .ts { background: #F3E8FD; color: #5B2282; }
+  .alert { background: #FAEEDA; border: 1px solid #FAC775; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #633806; margin-top: 5px; font-weight: 500; }
+  .alert-red { background: #FDECEA; border: 1px solid #F5A9A4; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #7C1D19; margin-top: 5px; font-weight: 500; }
+  .mlink { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #185FA5; text-decoration: none; margin-top: 5px; padding: 3px 8px; border: 1px solid #B5D4F4; border-radius: 8px; background: #E6F1FB; margin-right: 4px; }
+  .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  .split-col { background: #fff; border-radius: 8px; padding: 8px 10px; border: 0.5px solid #D7BEF0; }
+  .split-col-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #9B59B6; margin-bottom: 4px; }
+  .split-col p { font-size: 11px; color: #5f5e5a; margin-top: 2px; }
+  .map-panel { position: sticky; top: 16px; }
+  .map-box { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; overflow: hidden; }
+  .map-title { font-size: 12px; font-weight: 500; color: #5f5e5a; padding: 9px 13px; border-bottom: 1px solid #d3d1c7; }
+  #map { width: 100%; height: 300px; }
+  .map-locs { padding: 10px 13px; }
+  .loc-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid #eeede8; font-size: 11px; }
+  .loc-row:last-child { border-bottom: none; }
+  .loc-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .loc-name { font-weight: 500; color: #1a1a18; }
+  .loc-addr { color: #888780; font-size: 10px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid #d3d1c7; font-size: 11px; color: #888780; }
+  .li { display: flex; align-items: center; gap: 5px; }
+  .ld { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .footer { margin-top: 20px; font-size: 11px; color: #888780; border-top: 1px solid #d3d1c7; padding-top: 12px; }
+  @media (max-width: 660px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .map-panel { position: static; }
+    .split-grid { grid-template-columns: 1fr; }
+  }
+  @media print { body { background: white; } .tl-card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>Match day itinerary — Saturday 16 May 2026</h1>
+<p class="subtitle">Starting from 240 Brush Rd, Ourimbah &nbsp;·&nbsp; U10 Girls: arrive 30 min early &nbsp;·&nbsp; U13 Boys &amp; M45: arrive 45 min early</p>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-val">3 games</div><div class="metric-lbl">Today</div></div>
+  <div class="metric"><div class="metric-val">7:08am</div><div class="metric-lbl">First departure</div></div>
+  <div class="metric"><div class="metric-val">~5:13pm</div><div class="metric-lbl">Home by</div></div>
+  <div class="metric"><div class="metric-val">3h 12m</div><div class="metric-lbl">Midday home break</div></div>
+</div>
+
+<div class="clash-banner">
+  <strong>⚠️ Timing clash — Games 1 &amp; 2 overlap!</strong>
+  U10 Girls at Toukley ends at 9:00am but U13 Boys at Narara need arrival by 8:30am. You'll need to <strong>split up</strong> — one person heads to Toukley, the other goes direct to Narara.
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="timeline">
+      <div class="tl-line"></div>
+
+      <!-- SPLIT DEPARTURE -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#9B59B6"></div>
+        <div class="tl-card split">
+          <div class="ch"><div class="ct">&#128101; Split departure from home</div><div class="ctime">7:08am</div></div>
+          <div class="cd">Games 1 &amp; 2 clash — need to split up this morning</div>
+          <div class="split-grid">
+            <div class="split-col">
+              <div class="split-col-title">Person A — Toukley</div>
+              <p>Leave home: <strong>7:08am</strong></p>
+              <p>Drive: ~22 min</p>
+              <a class="mlink" style="margin-top:5px;display:inline-flex;" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/Evans+Road+Toukley+NSW+2263" target="_blank">&#128204; Maps</a>
+            </div>
+            <div class="split-col">
+              <div class="split-col-title">Person B — Narara</div>
+              <p>Leave home: <strong>8:20am</strong></p>
+              <p>Drive: ~10 min</p>
+              <a class="mlink" style="margin-top:5px;display:inline-flex;" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/Maliwa+and+Adam+Street+Narara+NSW+2250" target="_blank">&#128204; Maps</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAME 1 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#D4537E"></div>
+        <div class="tl-card girls">
+          <div class="ch">
+            <div><span class="tag tg">U10 Girls</span><span class="tag ts">Person A</span><div class="ct" style="margin-top:4px">TOU U10GIRLS-1 vs OUR U10GIRLS-2</div></div>
+            <div class="ctime">8:00 – 9:00am</div>
+          </div>
+          <div class="cloc">Evans Road, Toukley NSW 2263</div>
+          <div class="cd" style="margin-top:5px">Arrive by 7:30am (30 min early) &nbsp;·&nbsp; Game ~1 hr</div>
+        </div>
+      </div>
+
+      <!-- GAME 2 (simultaneous) -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#378ADD"></div>
+        <div class="tl-card u13">
+          <div class="ch">
+            <div><span class="tag tb">U13 Boys</span><span class="tag ts">Person B</span><div class="ct" style="margin-top:4px">GOS U13B vs OUR U13B</div></div>
+            <div class="ctime">9:15 – 10:30am</div>
+          </div>
+          <div class="cloc">Maliwa and Adam Street, Narara NSW 2250</div>
+          <div class="cd" style="margin-top:5px">Arrive by 8:30am (45 min early) &nbsp;·&nbsp; Game ~1 hr 15 min</div>
+        </div>
+      </div>
+
+      <!-- HOME BREAK -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#d3d1c7"></div>
+        <div class="tl-card hbreak">
+          <div class="ch"><div class="ct">Both home</div><div class="ctime">~10:40am – 1:52pm</div></div>
+          <div class="cd">3 hours 12 min at home before heading to Doyalson</div>
+          <span class="tag th">3h 12m break</span>
+        </div>
+      </div>
+
+      <!-- DEPARTURE 3 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Depart for Doyalson</div><div class="ctime">1:52pm</div></div>
+          <div class="cd">Drive to Doyalson RSL Oval (~28 min, ~22km)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/240+Brush+Rd+Ourimbah+NSW+2258/Off+Wentworth+Avenue+Doyalson+NSW+2262" target="_blank">&#128204; Google Maps directions</a>
+          <div class="alert">&#9200; Leave by 1:52pm to arrive by 2:20pm (45 min early)</div>
+        </div>
+      </div>
+
+      <!-- GAME 3 -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#1D9E75"></div>
+        <div class="tl-card m45">
+          <div class="ch">
+            <div><span class="tag tm">M45</span><div class="ct" style="margin-top:4px">DOY M45C vs OUR M45C</div></div>
+            <div class="ctime">3:05 – 4:45pm</div>
+          </div>
+          <div class="cloc">Doyalson RSL Oval, Off Wentworth Avenue, Doyalson NSW 2262</div>
+          <div class="cd" style="margin-top:5px">Arrive by 2:20pm (45 min early) &nbsp;·&nbsp; Game ~1 hr 40 min</div>
+        </div>
+      </div>
+
+      <!-- RETURN HOME -->
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#888780"></div>
+        <div class="tl-card travel">
+          <div class="ch"><div class="ct">Return home</div><div class="ctime">~5:13pm</div></div>
+          <div class="cd">Drive home from Doyalson (~28 min)</div>
+          <a class="mlink" href="https://www.google.com/maps/dir/Off+Wentworth+Avenue+Doyalson+NSW+2262/240+Brush+Rd+Ourimbah+NSW+2258" target="_blank">&#128204; Google Maps directions home</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#D4537E"></div>U10 Girls</div>
+      <div class="li"><div class="ld" style="background:#378ADD"></div>U13 Boys</div>
+      <div class="li"><div class="ld" style="background:#1D9E75"></div>M45</div>
+      <div class="li"><div class="ld" style="background:#9B59B6"></div>Split run</div>
+      <div class="li"><div class="ld" style="background:#d3d1c7"></div>Home / travel</div>
+    </div>
+  </div>
+
+  <div class="map-panel">
+    <div class="map-box">
+      <div class="map-title">Match day locations</div>
+      <div id="map"></div>
+      <div class="map-locs">
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#888780"></div>
+          <div><div class="loc-name">Home base</div><div class="loc-addr">240 Brush Rd, Ourimbah</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#D4537E"></div>
+          <div><div class="loc-name">Game 1 — Toukley</div><div class="loc-addr">Evans Rd &nbsp;·&nbsp; 8:00am · U10 Girls</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#378ADD"></div>
+          <div><div class="loc-name">Game 2 — Narara</div><div class="loc-addr">Maliwa &amp; Adam St &nbsp;·&nbsp; 9:15am · U13 Boys</div></div>
+        </div>
+        <div class="loc-row">
+          <div class="loc-dot" style="background:#1D9E75"></div>
+          <div><div class="loc-name">Game 3 — Doyalson</div><div class="loc-addr">Wentworth Ave &nbsp;·&nbsp; 3:05pm · M45</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Drive times are approximate. Allow extra time on game days. Google Maps links open turn-by-turn directions.<br>
+  Generated from Shelley Family Google Calendar &nbsp;·&nbsp; 240 Brush Rd, Ourimbah NSW 2258
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var map = L.map('map').setView([-33.38, 151.41], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  function makeIcon(color) {
+    return L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35)"></div>',
+      iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -10]
+    });
+  }
+
+  L.marker([-33.3641, 151.3973], {icon: makeIcon('#888780')})
+    .addTo(map).bindPopup('<b>Home base</b><br>240 Brush Rd, Ourimbah');
+
+  // Toukley: Evans Rd approx -33.2617, 151.5084
+  L.marker([-33.2617, 151.5084], {icon: makeIcon('#D4537E')})
+    .addTo(map).bindPopup('<b>Game 1 — U10 Girls</b><br>Evans Rd, Toukley<br>8:00am');
+
+  // Narara: Maliwa & Adam St approx -33.3710, 151.3455
+  L.marker([-33.3710, 151.3455], {icon: makeIcon('#378ADD')})
+    .addTo(map).bindPopup('<b>Game 2 — U13 Boys</b><br>Maliwa & Adam St, Narara<br>9:15am');
+
+  // Doyalson: Wentworth Ave approx -33.2198, 151.5162
+  L.marker([-33.2198, 151.5162], {icon: makeIcon('#1D9E75')})
+    .addTo(map).bindPopup('<b>Game 3 — M45</b><br>Doyalson RSL Oval<br>3:05pm');
+
+  // Route lines
+  L.polyline([
+    [-33.3641, 151.3973], [-33.2617, 151.5084], [-33.3641, 151.3973]
+  ], {color: '#D4537E', weight: 2, opacity: 0.5, dashArray: '5,6'}).addTo(map);
+
+  L.polyline([
+    [-33.3641, 151.3973], [-33.3710, 151.3455], [-33.3641, 151.3973]
+  ], {color: '#378ADD', weight: 2, opacity: 0.5, dashArray: '5,6'}).addTo(map);
+
+  L.polyline([
+    [-33.3641, 151.3973], [-33.2198, 151.5162], [-33.3641, 151.3973]
+  ], {color: '#1D9E75', weight: 2, opacity: 0.5, dashArray: '5,6'}).addTo(map);
+</script>
+</body>
+</html>
